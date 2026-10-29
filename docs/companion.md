@@ -2,6 +2,7 @@
 
 在原有配置合并 `companion.example.yaml`，替换 Bellkeeper 地址和专用 token。模型组保持 `pool-bili-deepseek-paid`。五个场景共享 `ChatGPT.Prompt`：聊天、欢迎、礼物感谢、报时和冷场。完整人格与语气示例见 [persona-yuqinghuan.md](persona-yuqinghuan.md)。
 
+- 人格默认以自然接话为主，日常场景通常不主动提主播，多数回复不加 emoji；近期 8 条机器人发言用于避免重复开头、收尾和表情，示例只展示语气，不是抽取模板。偶尔使用的表情由语境决定，不按固定轮次轮换。
 - `Companion.Enabled` 为总开关，默认关闭；`Welcome/Gift/Clock/Idle` 可单独关闭。聊天仍由 `TalkRobotCmd` 触发。欢迎、关注、分享、礼物和定时任务还需开启原有开关；欢迎白名单、黑名单、财富等级筛选保留。关注/分享使用欢迎人格开关。
 - `MaxUnits: 80` 同时限制正文和原生 `@昵称 `，ASCII 计 1、BMP 字符计 2、非 BMP 字符计 4。组合 emoji 不截断。发送前清除换行、Markdown 标记及常见 URL，超长时截短为一条；昵称耗尽预算时不发送。
 - 礼物按 UID 合并，安静 8 秒后感谢，连续送礼最长等待 20 秒。合并真实礼物与数量；盲盒保留来源名称。此模式不额外发送旧版盲盒盈亏感谢串；盲盒数据库统计仍保留。舰长和红包走礼物人格。
