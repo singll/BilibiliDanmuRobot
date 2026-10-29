@@ -2,8 +2,11 @@ package main
 
 import (
 	"bufio"
+	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/Hello-Moeka/BilibiliDanmuRobot-Core/companion"
 	"github.com/Hello-Moeka/BilibiliDanmuRobot-Core/config"
 	"github.com/Hello-Moeka/BilibiliDanmuRobot-Core/entity"
 	"github.com/Hello-Moeka/BilibiliDanmuRobot-Core/handler"
@@ -20,14 +23,50 @@ import (
 )
 
 var configFile = flag.String("f", "etc/bilidanmaku-api.yaml", "the config file")
+var checkConfig = flag.Bool("check-config", false, "validate configuration without connecting or sending")
+var previewScene = flag.String("preview-scene", "", "generate chat/welcome/gift/clock/idle preview without sending to Bilibili")
+var previewInput = flag.String("preview-input", "", "facts or viewer text for preview")
+var previewName = flag.String("preview-name", "", "native mention nickname included in preview length budget")
 var Version string
 var cls handler.WsHandler
 
 func main() {
 	flag.Parse()
+	handler.ConfigFile = *configFile
 	var err error
 	var c config.Config
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
+	if err := c.ValidateCompanion(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	if *checkConfig {
+		fmt.Println("configuration valid")
+		return
+	}
+	if *previewScene != "" {
+		switch *previewScene {
+		case "chat", "welcome", "gift", "clock", "idle":
+		default:
+			fmt.Fprintln(os.Stderr, "invalid preview scene")
+			os.Exit(1)
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Companion.TimeoutSeconds)*time.Second)
+		defer cancel()
+		e := companion.Event{Scene: *previewScene, Facts: *previewInput, Name: *previewName, Budget: companion.ReplyBudget(c.Companion.MaxUnits, *previewName), Time: companion.LocalTime(time.Now())}
+		out, err := companion.Generate(ctx, c.ChatGPT, c.Companion.MaxTokens, e)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		out = companion.Fit(out, *previewName, c.Companion.MaxUnits)
+		prefix := ""
+		if *previewName != "" {
+			prefix = "@" + *previewName + " "
+		}
+		_ = json.NewEncoder(os.Stdout).Encode(map[string]interface{}{"scene": *previewScene, "text": prefix + out, "units": companion.Units(prefix + out), "sent": false})
+		return
+	}
 	logx.MustSetup(c.Log)
 	logx.DisableStat()
 
@@ -84,7 +123,6 @@ func main() {
 	}
 	logx.Info("正在检测直播间是否开播...")
 	cls = handler.NewWsHandler()
-	cls.InitStartWsClient()
 	for {
 		select {
 
@@ -97,7 +135,7 @@ func main() {
 				logic.PushToBulletSender(ta)
 			}
 
-		// 每1分钟检查一次直播间是否开播
+		// 每10秒检查一次直播间是否开播
 		case <-t.C:
 			if info, err = http.RoomInit(ctx.Config.RoomId); err != nil {
 				logx.Infof("RoomInit错误：%v", err)
@@ -129,7 +167,10 @@ func main() {
 		}
 	}
 END:
-
+	if cls != nil {
+		cls.StopWsClient()
+		cls.StopChanel()
+	}
 	return
 }
 func userlogin() error {
