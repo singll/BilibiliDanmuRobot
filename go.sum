@@ -119,6 +119,8 @@ github.com/sashabaranov/go-openai v1.24.1 h1:DWK95XViNb+agQtuzsn+FyHhn3HQJ7Va8z0
 github.com/sashabaranov/go-openai v1.24.1/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
 github.com/singll/BilibiliDanmuRobot-Core v1.1.24-0.20261029143310-46f23f045c1d h1:t4cTF/wD4M3knusqVT45NCHSYnR45KauSdzFr7jkJOY=
 github.com/singll/BilibiliDanmuRobot-Core v1.1.24-0.20261029143310-46f23f045c1d/go.mod h1:DrZ5cGCMAbWCcw8JeccsVFj34MjwUHhQF+Zt0k1+hH4=
+github.com/singll/BilibiliDanmuRobot-Core v1.1.24-0.20261030141251-975dda00d21b h1:vlzcWbtfzQJZ7mEfxu71qgbTpHbiDUUugw4GCBvmFSE=
+github.com/singll/BilibiliDanmuRobot-Core v1.1.24-0.20261030141251-975dda00d21b/go.mod h1:DrZ5cGCMAbWCcw8JeccsVFj34MjwUHhQF+Zt0k1+hH4=
 github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e h1:MRM5ITcdelLK2j1vwZ3Je0FKVCfqOLp5zO6trqMLYs0=
 github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e/go.mod h1:XV66xRDqSt+GTGFMVlhk3ULuV0y9ZmzeVGR4mloJI3M=
 github.com/spaolacci/murmur3 v1.1.0 h1:7c1g84S4BPRrfL5Xrdp6fOJ206sU9y293DDHaoy0bLI=
